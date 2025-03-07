@@ -5,17 +5,17 @@ from tensorflow.keras.preprocessing import image
 from PIL import Image
 import base64
 
-# ====== CẤU HÌNH STREAMLIT ======
+
 st.set_page_config(page_title="Cat Dog Classification", page_icon="🐶🐱", layout="centered")
 
-# ====== HÀM ĐỌC ẢNH NỀN (BASE64) ======
+
 def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-bg_img_base64 = get_base64_image("D:\\Cat_Dog_Classification\\R.jpg")  # Đổi đường dẫn ảnh nếu cần
+bg_img_base64 = get_base64_image("D:\\Cat_Dog_Classification\\R.jpg")
 
-# ====== CHÈN ẢNH NỀN VỚI CSS ======
+
 page_bg_img = f"""
 <style>
     .stApp {{
@@ -45,29 +45,24 @@ page_bg_img = f"""
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# ====== TẢI MODEL ======
+
 MODEL_PATH = "D:\\Cat_Dog_Classification\\src\\cat_dog_classifier.keras"
 model = tf.keras.models.load_model(MODEL_PATH)
 
-IMG_SIZE = (128, 128)  # Kích thước ảnh đầu vào của model
+IMG_SIZE = (128, 128) 
 
 def preprocess_image(img):
-    """Resize ảnh về đúng kích thước model yêu cầu"""
     img = img.resize(IMG_SIZE)  
     img_array = image.img_to_array(img) / 255.0  
     img_array = np.expand_dims(img_array, axis=0)  
     return img_array
 
 def predict_image(img):
-    """Tiền xử lý ảnh và dự đoán"""
     img_array = preprocess_image(img)
     prediction = model.predict(img_array)
     return prediction
 
-# # ====== GIAO DIỆN STREAMLIT ======
-# st.markdown("<h1>🐶🐱 Cat Dog Classification 🐱🐶</h1>", unsafe_allow_html=True)
-# st.markdown("<h3>Tải lên ảnh của bạn để phân loại chó hoặc mèo.</h3>", unsafe_allow_html=True)
-# ====== GIAO DIỆN STREAMLIT ======
+
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
@@ -111,42 +106,23 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# Nút Upload Image
 uploaded_file = st.file_uploader("", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
 
-# if uploaded_file is not None:
-#     img = Image.open(uploaded_file)
-
-#     # Hiển thị ảnh đã tải lên
-#     st.image(img, caption="Image", use_column_width=True)
-
-#     # Dự đoán và hiển thị kết quả dưới ảnh
-#     prediction = predict_image(img)
-#     class_names = ["Cat 🐱", "Dog 🐶"]  
-#     predicted_class = class_names[np.argmax(prediction)]
-#     confidence = np.max(prediction)
-
-#     # Hiển thị kết quả với màu sắc nổi bật
-#     st.markdown(f"<div class='result'>🔥 Solution: {predicted_class} 🔥</div>", unsafe_allow_html=True)
 if uploaded_file is not None:
     img = Image.open(uploaded_file)
 
-    # Hiển thị ảnh đã tải lên
     st.image(img, use_column_width=True)
 
-    # Dự đoán và hiển thị kết quả dưới ảnh
     prediction = predict_image(img)
     class_names = ["Cat 🐱", "Dog 🐶"]  
     predicted_class = class_names[np.argmax(prediction)]
     confidence = np.max(prediction)
 
-    # Chọn ảnh nền tương ứng
     if predicted_class == "Cat 🐱":
-        bg_img_base64 = get_base64_image("D:\\Cat_Dog_Classification\\bgcats.png")  # Ảnh nền cho mèo
+        bg_img_base64 = get_base64_image("D:\\Cat_Dog_Classification\\bgcats.png") 
     else:
-        bg_img_base64 = get_base64_image("D:\\Cat_Dog_Classification\\bgdog.jpg")  # Ảnh nền cho chó
+        bg_img_base64 = get_base64_image("D:\\Cat_Dog_Classification\\bgdog.jpg") 
 
-    # Cập nhật CSS ảnh nền
     dynamic_bg_css = f"""
     <style>
         .stApp {{
